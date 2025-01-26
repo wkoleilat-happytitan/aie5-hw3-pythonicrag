@@ -168,6 +168,8 @@ Simply put, this downloads the file as a temp file, we load it in with `TextFile
 
 Why do we want to support streaming? What about streaming is important, or useful?
 
+** ANSWER: ** Streaming is important because it allows the LLM Application to respond to the user's request in near real-time. The user doesn't have to wait for the LLM to finish processing the request, generate an output, and then display it. Instead, the LLM can stream the response to the user as it is being generated.  It is useful from an experience standpoint, as well as performance.
+
 ### On Chat Start:
 
 The next scope is where "the magic happens". On Chat Start is when a user begins a chat session. This will happen whenever a user opens a new chat window, or refreshes an existing chat window.
@@ -209,6 +211,8 @@ Now, we'll save that into our user session!
 #### ❓ QUESTION #2: 
 
 Why are we using User Session here? What about Python makes us need to use this? Why not just store everything in a global variable?
+
+** ANSWER: ** We are using user session to persist the context of the user's chat session. This allows the LLM application to access context from previous chat messages and use it to generate a response. Why not a global variable? In a global variable, the context or variables would be shared across all users, which would be problematic. It would be difficult to maintain and manage.
 
 ### On Message
 
@@ -334,6 +338,16 @@ Upload a PDF file of the recent DeepSeek-R1 paper and ask the following question
 3. What is this paper about?
 
 Does this application pass your vibe check? Are there any immediate pitfalls you're noticing?
+
+** ANSWER: ** The application doesn't pass my vibe check.
+
+It does answer the questions above but failes to answer follow up questions. 
+
+For example, after asking question 1 and getting the answer. I asked a follow up question about examples of RL in the paper. The answer is "I don't know the answer". 
+
+I also asked for specific references from the paper and citations. The answer is "I don't know the answer". The application must find the exact words in the paper to form an answer to the question. This has a narrow utility and very brittle.
+
+Similarly, the answer to the question "What is this paper about?" is "I don't know the answer". It lacks the ability to summarize the paper or understand the entire context of the paper.
 
 ## 🚧 CHALLENGE MODE 🚧
 
