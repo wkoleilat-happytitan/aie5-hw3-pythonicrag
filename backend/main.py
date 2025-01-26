@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -8,6 +8,8 @@ import shutil
 import os
 import uuid
 import logging
+from dotenv import load_dotenv
+import openai
 
 from aimakerspace.text_utils import CharacterTextSplitter, TextFileLoader, PDFLoader
 from aimakerspace.openai_utils.prompts import UserRolePrompt, SystemRolePrompt
@@ -25,6 +27,20 @@ app = FastAPI()
 
 # Add a test log when the server starts
 logger.info("Server starting up...")
+
+# Load environment variables
+load_dotenv()
+
+api_key = os.getenv('OPENAI_API_KEY')
+if api_key:
+    # Print first 4 and last 4 characters of the API key
+    logger.info(f"API Key loaded: {api_key[:4]}...{api_key[-4:]}")
+    os.environ["OPENAI_API_KEY"] = api_key
+else:
+    logger.error("No API key found!")
+
+# Initialize ChatOpenAI without api_key parameter
+chat_openai = ChatOpenAI()
 
 # Update CORS middleware to include port 8080
 app.add_middleware(
@@ -109,7 +125,8 @@ async def upload_file(file: UploadFile = File(...)):
             vector_db = await vector_db.abuild_from_list(texts)
             
             # Create RAG pipeline
-            chat_openai = ChatOpenAI()
+            chat_openai = ChatOpenAI()  # No parameters needed
+            
             rag_pipeline = RetrievalAugmentedQAPipeline(
                 vector_db_retriever=vector_db,
                 llm=chat_openai
